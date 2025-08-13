@@ -49,7 +49,7 @@
                     <p>«МеталлоПрокат» — это надежный партнер для бизнеса и частных клиентов, ценящих качество, надежность и профессионализм.</p>
                 </div>
                 <div class="about-image">
-                    <img src="sm.jpg" alt="Наш склад">
+                    <img src="images\sm.jpg" alt="Наш склад">
                 </div>
             </div>
         </div>
@@ -83,7 +83,7 @@
                     <p>Мы подбираем оптимальный вариант перевозки, чтобы сэкономить ваше время и деньги.</p>
                 </div>
                 <div class="delivery-image">
-                    <img src="sm.jpg" alt="Доставка металлопроката">
+                    <img src="images\sm.jpg" alt="Доставка металлопроката">
                 </div>
             </div>
             <div class="delivery-steps">
@@ -105,36 +105,32 @@
             <div class="gallery-grid">
                 <!-- Работа 1 -->
                 <div class="gallery-item">
-                    <img src="sm.jpg" alt="Металлоконструкции">
+                    <img src="images\sm.jpg" alt="Металлоконструкции">
                 </div>
 
                 <!-- Работа 2 -->
                 <div class="gallery-item">
-                    <img src="sm.jpg" alt="Ограждения">
+                    <img src="images\sm.jpg" alt="Ограждения">
                 </div>
 
                 <!-- Работа 3 -->
                 <div class="gallery-item">
-                    <img src="sm.jpg" alt="Лестницы">
-                    <div class="gallery-caption">
-                        <h3>Лестницы</h3>
-                        <p>Изготовление металлических лестниц</p>
-                    </div>
+                    <img src="images\sm.jpg" alt="Лестницы">
                 </div>
 
                 <!-- Работа 4 -->
                 <div class="gallery-item">
-                    <img src="sm.jpg" alt="Навесы">
+                    <img src="images\sm.jpg" alt="Навесы">
                 </div>
 
                 <!-- Работа 5 -->
                 <div class="gallery-item">
-                    <img src="sm.jpg" alt="Ворота">
+                    <img src="images\sm.jpg" alt="Ворота">
                 </div>
 
                 <!-- Работа 6 -->
                 <div class="gallery-item">
-                    <img src="sm.jpg" alt="Кровельные работы">
+                    <img src="images\sm.jpg" alt="Кровельные работы">
                 </div>
             </div>
         </div>
@@ -226,6 +222,9 @@ const sheetID = "1kUUJ51TDZ5MCqBcGw-Dwr2I3MsaMCjIlNrinSMmYR_Y";
 const sheetName = "Лист1";
 const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
 
+// URL твоего Google Apps Script
+const scriptURL = "https://script.google.com/macros/s/AKfycbzpvlapksfQYoGBkrCmRCOxzMMRXhvspPDrw9oiEcV8J3Cmb8sx2N1cleNQoFAlmh-6/exec";
+
 let products = [];
 let cart = [];
 
@@ -283,11 +282,18 @@ cartBtn.addEventListener("click", () => {
   cartPopup.style.display = cartPopup.style.display === "block" ? "none" : "block";
 });
 
+// Добавление товара в корзину
 function addToCart(product) {
-  cart.push(product);
+  const existingIndex = cart.findIndex(p => p.name === product.name);
+  if (existingIndex > -1) {
+    cart[existingIndex].quantity += 1;
+  } else {
+    cart.push({...product, quantity: 1});
+  }
   updateCartUI();
 }
 
+// Обновление корзины
 function updateCartUI() {
   const cartItems = document.getElementById("cart-items");
   const cartCount = document.getElementById("cart-count");
@@ -295,21 +301,59 @@ function updateCartUI() {
 
   cartItems.innerHTML = "";
   let total = 0;
+
   cart.forEach((item, index) => {
-    total += item.price;
+    total += item.price * item.quantity;
+
     const div = document.createElement("div");
     div.className = "cart-item";
-    div.innerHTML = `${item.name} - ${item.price} ₽ <button onclick="removeFromCart(${index})">x</button>`;
+    div.innerHTML = `
+      ${item.name} - ${item.price} ₽
+      <input type="number" min="1" value="${item.quantity}" class="cart-qty" style="width:50px; margin:0 5px;">
+      <button class="remove-btn" style="font-size:12px; padding:2px 6px;">✖</button>
+    `;
+
+    // Изменение количества
+    div.querySelector(".cart-qty").addEventListener("input", (e) => {
+      let qty = parseInt(e.target.value);
+      if (isNaN(qty) || qty < 1) qty = 1;
+      cart[index].quantity = qty;
+      updateCartUI();
+    });
+
+    // Удаление товара
+    div.querySelector(".remove-btn").addEventListener("click", () => {
+      cart.splice(index, 1); // Удаляем элемент из массива
+      updateCartUI();
+    });
+
     cartItems.appendChild(div);
   });
 
-  cartCount.textContent = cart.length;
+  cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
   cartTotal.textContent = total;
 }
 
-function removeFromCart(index) {
-  cart.splice(index, 1);
-  updateCartUI();
+// Привязка кнопок "В корзину" после загрузки товаров
+function renderProducts(list) {
+  const productGrid = document.querySelector(".product-grid");
+  productGrid.innerHTML = "";
+  list.forEach(product => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <div class="product-image">
+        <img src="${product.img}" alt="${product.name}">
+      </div>
+      <div class="product-info">
+        <h3>${product.name}</h3>
+        <div class="product-price">${product.price} ₽</div>
+        <a class="btn add-to-cart">В корзину</a>
+      </div>
+    `;
+    card.querySelector(".add-to-cart").addEventListener("click", () => addToCart(product));
+    productGrid.appendChild(card);
+  });
 }
 
 // Оформление заказа
@@ -322,40 +366,41 @@ document.getElementById("checkout-btn").addEventListener("click", () => {
     return;
   }
 
+  // Формируем список товаров с количеством
+  const productsList = cart.map(item => `${item.name} - ${item.price} ₽ x ${item.quantity}`).join(", ");
+
   const orderData = {
     name,
     phone,
-    products: cart.map(item => `${item.name} - ${item.price} ₽`).join(", "),
-    total: cart.reduce((sum, item) => sum + item.price, 0)
+    products: productsList,
+    total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    date: new Date().toLocaleString('ru-RU')
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbxDiqPYQXnFSJ3KiBdKi5jTtqI4tZjzwAOjJmIIbQehIzcs0B5nw8lpVxmgy8tQ9U1S/exec", {
+  fetch(scriptURL, {
     method: "POST",
-    body: JSON.stringify(orderData),
-    headers: {
-      "Content-Type": "application/json"
-    }
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderData)
   })
-  .then(response => response.json())
-  .then(result => {
-    if (result.status === "success") {
-      alert("Заказ успешно отправлен!");
-      cart = [];
-      updateCartUI();
-      document.getElementById("customer-name").value = "";
-      document.getElementById("customer-phone").value = "";
-      cartPopup.style.display = "none";
-    } else {
-      alert("Ошибка при отправке заказа: " + result.message);
-    }
+  .then(() => {
+    alert("Заказ успешно отправлен!");
+    cart = [];
+    updateCartUI();
+    document.getElementById("customer-name").value = "";
+    document.getElementById("customer-phone").value = "";
+    cartPopup.style.display = "none";
   })
   .catch(err => {
     console.error(err);
-    alert("Ошибка при отправке заказа: " + err.message);
+    alert("Ошибка при отправке заказа");
   });
 });
 
-
 </script>
+
+
+
 </body>
 </html>
+
