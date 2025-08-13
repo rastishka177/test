@@ -152,7 +152,7 @@
         /* Герой секция */
         .hero {
             height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('sm.jpg') no-repeat center center/cover;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('images\sm.jpg') no-repeat center center/cover;
             color: white;
             display: flex;
             align-items: center;
@@ -571,3 +571,35 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        #cart-popup {
+  display: none;
+  position: fixed;
+  top: 50px;          /* отступ сверху */
+  right: 50px;        /* отступ справа */
+  width: 400px;       /* увеличиваем ширину */
+  max-height: 600px;  /* максимальная высота */
+  overflow-y: auto;   /* вертикальная прокрутка при переполнении */
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  z-index: 1000;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.cart-item input.cart-qty {
+  width: 60px;        /* немного шире для удобства */
+}
+
+button.remove-btn {
+  font-size: 1px;
+  padding: 1px 3px;
+  cursor: pointer;
+}
