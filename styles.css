@@ -803,3 +803,53 @@ button.remove-btn {
         right: 20px;
     }
 }
+
+/* --- Адаптивность --- */
+
+/* Планшеты */
+@media (max-width: 768px) {
+  .catalogue__card {
+    flex: 1 1 calc(50% - 20px);
+  }
+
+  .about {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .about img {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+
+/* Телефоны */
+@media (max-width: 480px) {
+  header nav {
+    display: none;
+  }
+
+  header .mobile-menu {
+    display: block;
+  }
+
+  .catalogue__card {
+    flex: 1 1 100%;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  p {
+    font-size: 14px;
+  }
+
+  .about {
+    padding: 0 10px;
+  }
+}
