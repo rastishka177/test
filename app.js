@@ -1,3 +1,12 @@
+// На телефоне появляется кнопка ☰, по нажатию она открывает/закрывает список ссылок
+const toggleBtn = document.getElementById('menuToggle');
+const menuList = document.getElementById('menuList');
+
+toggleBtn.addEventListener('click', () => {
+  menuList.classList.toggle('show');
+});
+
+
 // Конфигурация
 const sheetID = "1kUUJ51TDZ5MCqBcGw-Dwr2I3MsaMCjIlNrinSMmYR_Y";
 const sheetName = "Лист1";
@@ -205,4 +214,5 @@ document.getElementById("checkout-btn").addEventListener("click", () => {
     console.error(err);
     alert("Ошибка при отправке заказа");
   });
+
 });
